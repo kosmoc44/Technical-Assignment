@@ -5,11 +5,15 @@ import { Languages, Search } from "lucide-react";
 import SearchInput from "./Search";
 import { useNotesStore } from "@/store/notesStore";
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/store/authStore";
 
 export const ComponentName: React.FC = () => {
   const { language, setLanguage, t } = useLanguage();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { setSearchQuery } = useNotesStore();
+  const { user, logout } = useAuthStore();
+  const navigate = useNavigate();
 
   const handleCloseSearch = () => {
     setIsSearchOpen(false);
@@ -19,6 +23,12 @@ export const ComponentName: React.FC = () => {
   const toggleLanguage = () => {
     setLanguage(language === "en" ? "ru" : "en");
   };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
   return (
     <header className="shadow-md p-4">
       <div className="container mx-auto flex items-center justify-between">
@@ -38,6 +48,13 @@ export const ComponentName: React.FC = () => {
               <Button onClick={() => setIsSearchOpen(true)} variant="outline">
                 <Search />
               </Button>
+              {user ? (
+                <Button onClick={handleLogout}>{t("logout")}</Button>
+              ) : (
+                <Link to="/signin">
+                  <Button>{t("login")}</Button>
+                </Link>
+              )}
             </div>
           </>
         )}
