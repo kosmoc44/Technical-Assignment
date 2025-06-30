@@ -22,6 +22,8 @@ export const SortName: React.FC = () => {
         return t("sortByDate");
       case "priority":
         return t("sortByPriority");
+      case "status":
+        return t("sortByStatus");
       default:
         return t("sort");
     }
@@ -43,6 +45,9 @@ export const SortName: React.FC = () => {
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setSortType("priority")}>
           {t("sortByPriority")}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setSortType("status")}>
+          {t("sortByStatus")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

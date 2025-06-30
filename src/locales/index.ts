@@ -34,6 +34,11 @@ export const translations = {
     sortByDate: "Sort by Date",
     sortByName: "Sort by Name",
     sortByPriority: "Sort by Priority",
+    completed: "Completed",
+    active: "Active",
+    status: "Status",
+    sortByStatus: "Sort by Status",
+    confirmLogout: "Are you sure you want to logout?",
   },
   ru: {
     Notes: "Заметки",
@@ -70,6 +75,11 @@ export const translations = {
     sortByDate: "Сортировать по дате",
     sortByName: "Сортировать по имени",
     sortByPriority: "Сортировать по приоритету",
+    completed: "Выполнено",
+    active: "Активно",
+    status: "Статус",
+    sortByStatus: "Сортировать по статусу",
+    confirmLogout: "Вы уверены, что хотите выйти?",
   },
 };
 

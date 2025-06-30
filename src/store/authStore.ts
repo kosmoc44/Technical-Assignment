@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import { auth } from "@/firebase/index";
 import {
   signInWithEmailAndPassword,
@@ -18,61 +19,69 @@ interface AuthState {
   setUser: (user: User | null) => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  loading: false,
-  error: null,
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      user: null,
+      loading: false,
+      error: null,
 
-  signIn: async (email, password) => {
-    set({ loading: true, error: null });
-    try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      set({ user: userCredential.user, loading: false });
-      return true;
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      set({ error: errorMessage, loading: false });
-      return false;
+      signIn: async (email, password) => {
+        set({ loading: true, error: null });
+        try {
+          const userCredential = await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
+          set({ user: userCredential.user, loading: false });
+          return true;
+        } catch (error: unknown) {
+          const errorMessage =
+            error instanceof Error ? error.message : String(error);
+          set({ error: errorMessage, loading: false });
+          return false;
+        }
+      },
+
+      signUp: async (email, password) => {
+        set({ loading: true, error: null });
+        try {
+          const userCredential = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
+          set({ user: userCredential.user, loading: false });
+          return true;
+        } catch (error: unknown) {
+          const errorMessage =
+            error instanceof Error ? error.message : String(error);
+          set({ error: errorMessage, loading: false });
+          return false;
+        }
+      },
+
+      logout: async () => {
+        set({ loading: true });
+        try {
+          await signOut(auth);
+          set({ user: null, loading: false });
+        } catch (error: unknown) {
+          const errorMessage =
+            error instanceof Error ? error.message : String(error);
+          set({ error: errorMessage, loading: false });
+        }
+      },
+
+      setUser: (user) => set({ user }),
+    }),
+    {
+      name: "auth-storage",
+      partialize: (state) => ({ user: state.user }),
     }
-  },
-
-  signUp: async (email, password) => {
-    set({ loading: true, error: null });
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      set({ user: userCredential.user, loading: false });
-      return true;
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      set({ error: errorMessage, loading: false });
-      return false;
-    }
-  },
-
-  logout: async () => {
-    set({ loading: true });
-    try {
-      await signOut(auth);
-      set({ user: null, loading: false });
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      set({ error: errorMessage, loading: false });
-    }
-  },
-
-  setUser: (user) => set({ user }),
-}));
+  )
+);
 
 onAuthStateChanged(auth, (user) => {
   useAuthStore.getState().setUser(user);

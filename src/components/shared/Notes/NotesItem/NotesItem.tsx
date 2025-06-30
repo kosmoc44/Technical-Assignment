@@ -6,6 +6,7 @@ import { useRef, useState } from "react";
 import { DeleteConfirmationDialog } from "./DeleteConfirmationDialog";
 import { useLanguage } from "@/context/useLanguageContext";
 import { AnimatePresence, motion } from "framer-motion";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface NotesItemProps {
   note: Note;
@@ -23,6 +24,7 @@ export const NotesItem: React.FC<NotesItemProps> = ({
   const cardRef = useRef<HTMLDivElement>(null);
   const deleteNote = useNotesStore((state) => state.deleteNote);
   const searchQuery = useNotesStore((state) => state.searchQuery);
+  const toggleNoteStatus = useNotesStore((state) => state.toggleNoteStatus);
   const { t } = useLanguage();
 
   const handleDelete = () => {
@@ -71,11 +73,47 @@ export const NotesItem: React.FC<NotesItemProps> = ({
           </div>
           <p className="text-gray-700 mb-4 border-b-1">{note.content}</p>
           <div className="flex flex-col sm:flex-row items-center gap-4 md:justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-md font-medium">{t("priority")}:</span>
-              <Badge className={`px-4 ${priorityStyles[note.priority]}`}>
-                {t(note.priority)}
-              </Badge>
+            <div className="flex items-start flex-col gap-1">
+              <div className="flex items-center gap-2">
+                <span className="text-md font-medium">{t("priority")}:</span>
+                <Badge className={`px-4 ${priorityStyles[note.priority]}`}>
+                  {t(note.priority)}
+                </Badge>
+              </div>
+              <div className="flex items-center gap-2 cursor-pointer w-full">
+                <span className="text-md font-medium">{t("status")}:</span>
+                <div className="flex items-center gap-2">
+                  <label
+                    htmlFor={`status-${note.id}`}
+                    className="text-sm font-medium"
+                  >
+                    <Badge
+                      variant={
+                        note.status === "completed" ? "default" : "secondary"
+                      }
+                      className={`min-w-[80px] justify-center ${
+                        note.status === "completed"
+                          ? "bg-blue-100 text-blue-700 "
+                          : "bg-gray-100 text-gray-800 "
+                      }`}
+                    >
+                      {note.status === "completed"
+                        ? t("completed")
+                        : t("active")}
+                    </Badge>
+                  </label>
+                  <Checkbox
+                    id={`status-${note.id}`}
+                    checked={note.status === "completed"}
+                    onCheckedChange={() => toggleNoteStatus(note.id)}
+                    className={
+                      note.status === "completed"
+                        ? "border-0 data-[state=checked]:bg-blue-700"
+                        : "text-gray-500 border-gray-400"
+                    }
+                  />
+                </div>
+              </div>
             </div>
             {!searchQuery ? (
               <div className="flex items-center gap-2">

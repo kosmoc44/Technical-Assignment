@@ -7,6 +7,16 @@ import { useNotesStore } from "@/store/notesStore";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export const ComponentName: React.FC = () => {
   const { language, setLanguage, t } = useLanguage();
@@ -49,7 +59,22 @@ export const ComponentName: React.FC = () => {
                 <Search />
               </Button>
               {user ? (
-                <Button onClick={handleLogout}>{t("logout")}</Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button>{t("logout")}</Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>{t("confirmLogout")}</AlertDialogTitle>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleLogout}>
+                        {t("logout")}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               ) : (
                 <Link to="/signin">
                   <Button>{t("login")}</Button>

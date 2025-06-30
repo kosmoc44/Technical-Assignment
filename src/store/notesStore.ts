@@ -2,7 +2,8 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 export type Priority = "low" | "medium" | "high";
-export type SortType = "name" | "date" | "priority";
+export type SortType = "name" | "date" | "priority" | "status";
+export type NoteStatus = "active" | "completed";
 
 export interface Note {
   id: string;
@@ -10,6 +11,7 @@ export interface Note {
   content: string;
   priority: Priority;
   createdAt: string;
+  status: NoteStatus;
 }
 
 interface NotesState {
@@ -27,6 +29,7 @@ interface NotesState {
   setSearchQuery: (query: string) => void;
   setSortType: (sortType: SortType) => void;
   getFilteredNotes: () => Note[];
+  toggleNoteStatus: (id: string) => void;
 }
 
 export const useNotesStore = create<NotesState>()(
@@ -44,6 +47,7 @@ export const useNotesStore = create<NotesState>()(
               title,
               content,
               priority,
+              status: "active",
               createdAt: new Date().toISOString(),
             },
           ],
@@ -71,7 +75,6 @@ export const useNotesStore = create<NotesState>()(
             note.title.toLowerCase().includes(query)
           );
         }
-
         switch (sortType) {
           case "name":
             filtered.sort((a, b) => a.title.localeCompare(b.title));
@@ -92,8 +95,28 @@ export const useNotesStore = create<NotesState>()(
           }
           default:
             break;
+          case "status":
+            {
+              filtered.sort((a, b) => {
+                if (a.status === b.status) return 0;
+                return a.status === "completed" ? -1 : 1;
+              });
+            }
+            break;
         }
         return filtered;
+      },
+      toggleNoteStatus: (id: string) => {
+        set((state) => ({
+          notes: state.notes.map((note) =>
+            note.id === id
+              ? {
+                  ...note,
+                  status: note.status === "active" ? "completed" : "active",
+                }
+              : note
+          ),
+        }));
       },
     }),
     {
